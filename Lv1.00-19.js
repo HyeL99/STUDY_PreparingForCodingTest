@@ -195,22 +195,163 @@ console.log('10',solution10(["Jane", "Kim"]));
 */
 
 const solution11 = (n) => {
-  let answer = [];
-  for(let i = n; i > 1; i--){
-    let ans = true;
-    if(i % 2 === 0) ans = false;
-    if(i === 2) ans = true;
-    for(let j = 3; j < i; j += 2){
-      if(ans){
-        if(i % j === 0) {
-          ans = false;
-          break;
-        }
-      }
+  // let answer = [];
+  // for(let i=0; i <= n; i++){
+  //   answer.push(true)
+  // }
+  // for(let i=2; i*i <= n; i ++){
+  //   if (answer[i]) {
+  //     for (let j = i * i; j <= n; j += i) {
+  //         answer[j] = false;
+  //     }
+  //   }
+  // }
+  // return answer.filter(item => item === true).length - 2;
+  const answer = new Set();
+    for(let i=1; i<=n; i+=2){
+        answer.add(i);
     }
-    if(!ans) answer.push(i);
-  }
-  return answer.length
+    answer.delete(1);
+    answer.add(2);
+    for(let j=3; j<Math.sqrt(n); j++){
+        if(answer.has(j)){
+             for(let k=j*2; k<=n; k+=j){    
+                answer.delete(k);
+             }
+        }
+    }
+    return answer.size;
 }
 
 console.log('11',solution11(10));
+
+/*
+  12. 수박수박수박수박수박수?
+  길이가 n이고, "수박수박수박수...."와 같은 패턴을 유지하는 문자열을 리턴하는 함수, solution을 완성하세요. 예를들어 n이 4이면 "수박수박"을 리턴하고 3이라면 "수박수"를 리턴하면 됩니다.
+*/
+
+const solution12 = (n) => {
+  //return n % 2 === 0 ? '수박'.repeat(n/2) : '수박'.repeat((n-1)/2)+'수'
+  return '수박'.repeat(n / 2 + 1).slice(0,n);
+}
+
+console.log('12',solution12(9));
+
+/*
+  13. 문자열을 정수로 바꾸기
+  문자열 s를 숫자로 변환한 결과를 반환하는 함수, solution을 완성하세요.
+
+    제한 조건
+    s의 길이는 1 이상 5이하입니다.
+    s의 맨앞에는 부호(+, -)가 올 수 있습니다.
+    s는 부호와 숫자로만 이루어져있습니다.
+    s는 "0"으로 시작하지 않습니다.
+*/
+
+const solution13 = (s) => {
+  //return Number(s)
+  return s/1;
+}
+
+console.log('13',solution13('-5'));
+
+/*
+  14. 시저 암호
+  어떤 문장의 각 알파벳을 일정한 거리만큼 밀어서 다른 알파벳으로 바꾸는 암호화 방식을 시저 암호라고 합니다. 예를 들어 "AB"는 1만큼 밀면 "BC"가 되고, 3만큼 밀면 "DE"가 됩니다. "z"는 1만큼 밀면 "a"가 됩니다. 문자열 s와 거리 n을 입력받아 s를 n만큼 민 암호문을 만드는 함수, solution을 완성해 보세요.
+*/
+
+const solution14 = (s, n) => {
+  let array = s.split('');
+  let rst = [];
+  array = array.map(item => {
+    if(item === ' ') return rst.push(' ')
+    let ascii = item.charCodeAt();
+    if( ascii >= 65 && ascii <= 90){
+      rst.push(ascii + n > 90 ? String.fromCharCode(ascii + n - 26) : String.fromCharCode(ascii + n))
+    } else {
+      rst.push(ascii + n > 122 ? String.fromCharCode(ascii + n - 26) : String.fromCharCode(ascii + n))
+    }
+  })
+  return rst.join('');
+}
+
+console.log('14',solution14("  a B z",4));
+
+/*
+  15. 약수의 합
+  정수 n을 입력받아 n의 약수를 모두 더한 값을 리턴하는 함수, solution을 완성해주세요.
+*/
+
+const solution15 = (n) => {
+  // let array = [];
+  // for(let i=1; i<=n; i++){
+  //   for(j=n; j>0; j--){
+  //     if(i * j === n) array.push(i,j);
+  //   }
+  // }
+  // array = [...new Set(array)];
+  // let answer = 0;
+  // for(let item of array) answer += item;
+  // return answer;
+  let answer = 0;
+  for(let i=1; i<=n; i++){
+    if(n % i === 0) answer += i;
+  }
+  return answer;
+}
+
+console.log('15',solution15(12));
+
+/*
+  16. 이상한 문자 만들기
+  문자열 s는 한 개 이상의 단어로 구성되어 있습니다. 각 단어는 하나 이상의 공백문자로 구분되어 있습니다. 각 단어의 짝수번째 알파벳은 대문자로, 홀수번째 알파벳은 소문자로 바꾼 문자열을 리턴하는 함수, solution을 완성하세요.
+    제한 사항
+    문자열 전체의 짝/홀수 인덱스가 아니라, 단어(공백을 기준)별로 짝/홀수 인덱스를 판단해야합니다.
+    첫 번째 글자는 0번째 인덱스로 보아 짝수번째 알파벳으로 처리해야 합니다.
+*/
+
+const solution16 = (s) => {
+  let array = s.split(' ').map(word => {
+    let wordArray = word.split('').map((item,index)=>{
+      return index % 2 === 0 ? item.toUpperCase() : item.toLowerCase();
+    })
+    return wordArray.join('');
+  })
+  return array.join(' ');
+}
+
+console.log('16',solution16("try hello world"));
+
+/*
+  17. 자릿수 더하기
+  자연수 N이 주어지면, N의 각 자릿수의 합을 구해서 return 하는 solution 함수를 만들어 주세요.
+  예를들어 N = 123이면 1 + 2 + 3 = 6을 return 하면 됩니다.
+*/
+
+const solution17 = (n) => {
+  return String(n).split('').reduce((a,b) => Number(a) + Number(b))
+}
+
+console.log('17',solution17(987));
+
+/*
+  18. 자연수 뒤집어 배열로 만들기
+  자연수 n을 뒤집어 각 자리 숫자를 원소로 가지는 배열 형태로 리턴해주세요. 예를들어 n이 12345이면 [5,4,3,2,1]을 리턴합니다.
+*/
+
+const solution18 = (n) => {
+  return n.toString().split('').reverse().map(item => Number(item))
+}
+
+console.log('18',solution18(12345));
+
+/*
+  19. 정수 내림차순으로 배치하기
+  함수 solution은 정수 n을 매개변수로 입력받습니다. n의 각 자릿수를 큰것부터 작은 순으로 정렬한 새로운 정수를 리턴해주세요. 예를들어 n이 118372면 873211을 리턴하면 됩니다.
+*/
+
+const solution19 = (n) => {
+  return parseInt((n + '').split('').sort((a,b) => b - a).map(item => item / 1).join(''));
+}
+
+console.log('19',solution19(12345));
