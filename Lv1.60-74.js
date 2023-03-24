@@ -327,3 +327,236 @@ const solution70 = (cards1, cards2, goal) =>  {
 }
 console.log('70',solution70(["i", "drink", "water"],	["want", "to"], ["i", "want", "to", "drink", "water"]));
 console.log('70',solution70(["i", "water", "drink"],	["want", "to"], ["i", "want", "to", "drink", "water"]));
+
+/*
+  71. 대충 만든 자판
+  휴대폰의 자판은 컴퓨터 키보드 자판과는 다르게 하나의 키에 여러 개의 문자가 할당될 수 있습니다.
+  키 하나에 여러 문자가 할당된 경우, 동일한 키를 연속해서 빠르게 누르면 할당된 순서대로 문자가 바뀝니다.
+  같은 규칙을 적용해 아무렇게나 만든 휴대폰 자판이 있습니다.
+  이 휴대폰 자판은 키의 개수가 1개부터 최대 100개까지 있을 수 있으며, 특정 키를 눌렀을 때 입력되는 문자들도 무작위로 배열되어 있습니다.
+  또, 같은 문자가 자판 전체에 여러 번 할당된 경우도 있고, 키 하나에 같은 문자가 여러 번 할당된 경우도 있습니다.
+  심지어 아예 할당되지 않은 경우도 있습니다.
+  따라서 몇몇 문자열은 작성할 수 없을 수도 있습니다.
+  이 휴대폰 자판을 이용해 특정 문자열을 작성할 때, 키를 최소 몇 번 눌러야 그 문자열을 작성할 수 있는지 알아보고자 합니다.
+  1번 키부터 차례대로 할당된 문자들이 순서대로 담긴 문자열배열 keymap과 입력하려는 문자열들이 담긴 문자열 배열 targets가 주어질 때,
+  각 문자열을 작성하기 위해 키를 최소 몇 번씩 눌러야 하는지 순서대로 배열에 담아 return 하는 solution 함수를 완성해 주세요.
+  단, 목표 문자열을 작성할 수 없을 때는 -1을 저장합니다.
+
+  1 ≤ keymap의 길이 ≤ 100
+    1 ≤ keymap의 원소의 길이 ≤ 100
+    keymap[i]는 i + 1번 키를 눌렀을 때 순서대로 바뀌는 문자를 의미합니다.
+      예를 들어 keymap[0] = "ABACD" 인 경우 1번 키를 한 번 누르면 A, 두 번 누르면 B, 세 번 누르면 A 가 됩니다.
+    keymap의 원소의 길이는 서로 다를 수 있습니다.
+    keymap의 원소는 알파벳 대문자로만 이루어져 있습니다.
+  1 ≤ targets의 길이 ≤ 100
+    1 ≤ targets의 원소의 길이 ≤ 100
+    targets의 원소는 알파벳 대문자로만 이루어져 있습니다.
+*/
+const solution71 = (keymap, targets) =>  {
+  return targets.map(word => {
+    let cnt = 0;
+    for(let i = 0; i < word.length; i++){
+      let keyList = [];
+      keymap.forEach(item => keyList.push(item.indexOf(word[i])));
+      // console.log(keyList);
+      if(Math.max(...keyList) === -1) return -1;
+      else{
+        cnt += (Math.min(...keyList.filter(num => num !== -1)) + 1)
+      }
+    }
+    return cnt;
+  })
+}
+console.log('71',solution71(["ABACD", "BCEFD"],	["ABCD","AABB"]));
+console.log('71',solution71(["AA"],	["B"]));
+console.log('71',solution71(["AGZ", "BSSS"],	["ASA","BGZ"]));
+
+/*
+  72. 덧칠하기
+  어느 학교에 페인트가 칠해진 길이가 n미터인 벽이 있습니다.
+  벽에 동아리 · 학회 홍보나 회사 채용 공고 포스터 등을 게시하기 위해 테이프로 붙였다가 철거할 때 떼는 일이 많고 그 과정에서 페인트가 벗겨지곤 합니다.
+  페인트가 벗겨진 벽이 보기 흉해져 학교는 벽에 페인트를 덧칠하기로 했습니다.
+  넓은 벽 전체에 페인트를 새로 칠하는 대신, 구역을 나누어 일부만 페인트를 새로 칠 함으로써 예산을 아끼려 합니다.
+  이를 위해 벽을 1미터 길이의 구역 n개로 나누고, 각 구역에 왼쪽부터 순서대로 1번부터 n번까지 번호를 붙였습니다. 그리고 페인트를 다시 칠해야 할 구역들을 정했습니다.
+  벽에 페인트를 칠하는 롤러의 길이는 m미터이고, 롤러로 벽에 페인트를 한 번 칠하는 규칙은 다음과 같습니다.
+    롤러가 벽에서 벗어나면 안 됩니다.
+    구역의 일부분만 포함되도록 칠하면 안 됩니다.
+  즉, 롤러의 좌우측 끝을 구역의 경계선 혹은 벽의 좌우측 끝부분에 맞춘 후 롤러를 위아래로 움직이면서 벽을 칠합니다.
+  현재 페인트를 칠하는 구역들을 완전히 칠한 후 벽에서 롤러를 떼며, 이를 벽을 한 번 칠했다고 정의합니다.
+  한 구역에 페인트를 여러 번 칠해도 되고 다시 칠해야 할 구역이 아닌 곳에 페인트를 칠해도 되지만 다시 칠하기로 정한 구역은 적어도 한 번 페인트칠을 해야 합니다.
+  예산을 아끼기 위해 다시 칠할 구역을 정했듯 마찬가지로 롤러로 페인트칠을 하는 횟수를 최소화하려고 합니다.
+  정수 n, m과 다시 페인트를 칠하기로 정한 구역들의 번호가 담긴 정수 배열 section이 매개변수로 주어질 때 롤러로 페인트칠해야 하는 최소 횟수를 return 하는 solution 함수를 작성해 주세요..
+
+  1 ≤ m ≤ n ≤ 100,000
+  1 ≤ section의 길이 ≤ n
+    1 ≤ section의 원소 ≤ n
+    section의 원소는 페인트를 다시 칠해야 하는 구역의 번호입니다.
+    section에서 같은 원소가 두 번 이상 나타나지 않습니다.
+    section의 원소는 오름차순으로 정렬되어 있습니다.
+*/
+const solution72 = (n, m, section) =>  {
+  let paint = Array(n).fill(1);
+  section.forEach(el => paint[el - 1] = 0);
+
+  let cnt = 0;
+  while(paint.includes(0)){
+    let index_0 = paint.indexOf(0);
+    for(let i = index_0; i < index_0 + m; i++){
+      paint[i] = 1;
+    }
+    cnt++;
+  }
+
+  return cnt;
+}
+console.log('72',solution72(8,	4,	[2, 3, 6]));
+console.log('72',solution72(5,	4,	[1, 3]));
+console.log('72',solution72(4,	1,	[1, 2, 3, 4]));
+
+/*
+  73. 바탕화면 정리
+  코딩테스트를 준비하는 머쓱이는 프로그래머스에서 문제를 풀고 나중에 다시 코드를 보면서 공부하려고 작성한 코드를 컴퓨터 바탕화면에 아무 위치에나 저장해 둡니다.
+  저장한 코드가 많아지면서 머쓱이는 본인의 컴퓨터 바탕화면이 너무 지저분하다고 생각했습니다.
+  프로그래머스에서 작성했던 코드는 그 문제에 가서 다시 볼 수 있기 때문에 저장해 둔 파일들을 전부 삭제하기로 했습니다.
+  컴퓨터 바탕화면은 각 칸이 정사각형인 격자판입니다.
+  이때 컴퓨터 바탕화면의 상태를 나타낸 문자열 배열 wallpaper가 주어집니다.
+  파일들은 바탕화면의 격자칸에 위치하고 바탕화면의 격자점들은 바탕화면의 가장 왼쪽 위를 (0, 0)으로 시작해 (세로 좌표, 가로 좌표)로 표현합니다.
+  빈칸은 ".", 파일이 있는 칸은 "#"의 값을 가집니다. 드래그를 하면 파일들을 선택할 수 있고, 선택된 파일들을 삭제할 수 있습니다.
+    머쓱이는 최소한의 이동거리를 갖는 한 번의 드래그로 모든 파일을 선택해서 한 번에 지우려고 하며 드래그로 파일들을 선택하는 방법은 다음과 같습니다.
+    드래그는 바탕화면의 격자점 S(lux, luy)를 마우스 왼쪽 버튼으로 클릭한 상태로 격자점 E(rdx, rdy)로 이동한 뒤 마우스 왼쪽 버튼을 떼는 행동입니다.
+    이때, "점 S에서 점 E로 드래그한다"고 표현하고 점 S와 점 E를 각각 드래그의 시작점, 끝점이라고 표현합니다.
+    점 S(lux, luy)에서 점 E(rdx, rdy)로 드래그를 할 때, "드래그 한 거리"는 |rdx - lux| + |rdy - luy|로 정의합니다.
+    점 S에서 점 E로 드래그를 하면 바탕화면에서 두 격자점을 각각 왼쪽 위, 오른쪽 아래로 하는 직사각형 내부에 있는 모든 파일이 선택됩니다.
+  머쓱이의 컴퓨터 바탕화면의 상태를 나타내는 문자열 배열 wallpaper가 매개변수로 주어질 때
+  바탕화면의 파일들을 한 번에 삭제하기 위해 최소한의 이동거리를 갖는 드래그의 시작점과 끝점을 담은 정수 배열을 return하는 solution 함수를 작성해 주세요.
+  드래그의 시작점이 (lux, luy), 끝점이 (rdx, rdy)라면 정수 배열 [lux, luy, rdx, rdy]를 return하면 됩니다.
+
+  1 ≤ wallpaper의 길이 ≤ 50
+  1 ≤ wallpaper[i]의 길이 ≤ 50
+    wallpaper의 모든 원소의 길이는 동일합니다.
+  wallpaper[i][j]는 바탕화면에서 i + 1행 j + 1열에 해당하는 칸의 상태를 나타냅니다.
+  wallpaper[i][j]는 "#" 또는 "."의 값만 가집니다.
+  바탕화면에는 적어도 하나의 파일이 있습니다.
+  드래그 시작점 (lux, luy)와 끝점 (rdx, rdy)는 lux < rdx, luy < rdy를 만족해야 합니다.
+*/
+const solution73 = (wallpaper) =>  {
+  let lux = wallpaper.length;
+  let luy = wallpaper[0].length;
+  let rdx = 0;
+  let rdy = 0;
+  wallpaper.forEach((row,index) => {
+    if(row.includes('#')){
+      lux = Math.min(lux,index);
+      rdx = Math.max(rdx,index);
+      let colIndexS = row.indexOf('#');
+      let colIndexE = row.lastIndexOf('#')
+      luy = Math.min(luy,colIndexS);
+      rdy = Math.max(rdy,colIndexE);
+    }
+  })
+  return [lux, luy, rdx + 1, rdy + 1];
+}
+console.log('73',solution73([".#...", "..#..", "...#."]));
+console.log('73',solution73(["..........", ".....#....", "......##..", "...##.....", "....#....."]));
+console.log('73',solution73([".##...##.", "#..#.#..#", "#...#...#", ".#.....#.", "..#...#..", "...#.#...", "....#...."]));
+console.log('73',solution73(["..", "#."]));
+
+/*
+  74. 바탕화면 정리
+  지나다니는 길을 'O', 장애물을 'X'로 나타낸 직사각형 격자 모양의 공원에서 로봇 강아지가 산책을 하려합니다. 산책은 로봇 강아지에 미리 입력된 명령에 따라 진행하며, 명령은 다음과 같은 형식으로 주어집니다.
+    ["방향 거리", "방향 거리" … ]
+  예를 들어 "E 5"는 로봇 강아지가 현재 위치에서 동쪽으로 5칸 이동했다는 의미입니다. 로봇 강아지는 명령을 수행하기 전에 다음 두 가지를 먼저 확인합니다.
+    주어진 방향으로 이동할 때 공원을 벗어나는지 확인합니다.
+    주어진 방향으로 이동 중 장애물을 만나는지 확인합니다.
+  위 두 가지중 어느 하나라도 해당된다면, 로봇 강아지는 해당 명령을 무시하고 다음 명령을 수행합니다.
+  공원의 가로 길이가 W, 세로 길이가 H라고 할 때, 공원의 좌측 상단의 좌표는 (0, 0), 우측 하단의 좌표는 (H - 1, W - 1) 입니다.
+  공원을 나타내는 문자열 배열 park, 로봇 강아지가 수행할 명령이 담긴 문자열 배열 routes가 매개변수로 주어질 때,
+  로봇 강아지가 모든 명령을 수행 후 놓인 위치를 [세로 방향 좌표, 가로 방향 좌표] 순으로 배열에 담아 return 하도록 solution 함수를 완성해주세요.
+
+  3 ≤ park의 길이 ≤ 50
+    3 ≤ park[i]의 길이 ≤ 50
+      park[i]는 다음 문자들로 이루어져 있으며 시작지점은 하나만 주어집니다.
+        S : 시작 지점
+        O : 이동 가능한 통로
+        X : 장애물
+    park는 직사각형 모양입니다.
+  1 ≤ routes의 길이 ≤ 50
+    routes의 각 원소는 로봇 강아지가 수행할 명령어를 나타냅니다.
+    로봇 강아지는 routes의 첫 번째 원소부터 순서대로 명령을 수행합니다.
+    routes의 원소는 "op n"과 같은 구조로 이루어져 있으며, op는 이동할 방향, n은 이동할 칸의 수를 의미합니다.
+      op는 다음 네 가지중 하나로 이루어져 있습니다.
+        N : 북쪽으로 주어진 칸만큼 이동합니다.
+        S : 남쪽으로 주어진 칸만큼 이동합니다.
+        W : 서쪽으로 주어진 칸만큼 이동합니다.
+        E : 동쪽으로 주어진 칸만큼 이동합니다.
+      1 ≤ n ≤ 9
+*/
+const solution74 = (park, routes) =>  {
+  let x = 0;
+  let y = 0;
+  for(let i = 0; i < park.length; i++){
+    if(park[i].includes('S')){
+      y = i;
+      x = park[i].indexOf('S');
+      break;
+    }
+  }
+
+  routes.forEach(route => {
+    let way = route[0];
+    let step = Number(route[2]);
+    let isBlock = false;
+
+    switch (way) {
+      case 'N':
+        if(park[y - step] && park[y - step][x]){
+          for(let i = 1; i <= step; i++){
+            if(park[y - i][x] === 'X') {
+              isBlock = true;
+              break;
+            }
+          }
+          if(!isBlock) y -= step;
+        }
+        break;
+      case 'S':
+        if(park[y + step] && park[y + step][x]){
+          for(let i = 1; i <= step; i++){
+            if(park[y + i][x] === 'X') {
+              isBlock = true;
+              break;
+            }
+          }
+          if(!isBlock) y += step;
+        }
+        break;
+      case 'W':
+        if(park[y][x - step]){
+          for(let i = 1; i <= step; i++){
+            if(park[y][x - i] === 'X') {
+              isBlock = true;
+              break;
+            }
+          }
+          if(!isBlock) x -= step;
+        }
+        break;
+      case 'E':
+        if(park[y][x + step]){
+          for(let i = 1; i <= step; i++){
+            if(park[y][x + i] === 'X') {
+              isBlock = true;
+              break;
+            }
+          }
+          if(!isBlock) x += step;
+        }
+        break;
+      default: break;
+    }
+  })
+  return [y,x]
+}
+console.log('74',solution74(["SOO","OOO","OOO"],	["E 2","S 2","W 1"]));
+console.log('74',solution74(["SOO","OXX","OOO"],	["E 2","S 2","W 1"]));
+console.log('74',solution74(["OSO","OOO","OXO","OOO"],	["E 2","S 3","W 1"]));
