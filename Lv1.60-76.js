@@ -462,7 +462,7 @@ console.log('73',solution73([".##...##.", "#..#.#..#", "#...#...#", ".#.....#.",
 console.log('73',solution73(["..", "#."]));
 
 /*
-  74. 바탕화면 정리
+  74. 공원 산책
   지나다니는 길을 'O', 장애물을 'X'로 나타낸 직사각형 격자 모양의 공원에서 로봇 강아지가 산책을 하려합니다. 산책은 로봇 강아지에 미리 입력된 명령에 따라 진행하며, 명령은 다음과 같은 형식으로 주어집니다.
     ["방향 거리", "방향 거리" … ]
   예를 들어 "E 5"는 로봇 강아지가 현재 위치에서 동쪽으로 5칸 이동했다는 의미입니다. 로봇 강아지는 명령을 수행하기 전에 다음 두 가지를 먼저 확인합니다.
@@ -560,3 +560,48 @@ const solution74 = (park, routes) =>  {
 console.log('74',solution74(["SOO","OOO","OOO"],	["E 2","S 2","W 1"]));
 console.log('74',solution74(["SOO","OXX","OOO"],	["E 2","S 2","W 1"]));
 console.log('74',solution74(["OSO","OOO","OXO","OOO"],	["E 2","S 3","W 1"]));
+
+/* 75. 추억 점수 */
+
+const solution75 = (name, yearning, photo) =>  {
+  return photo.map(item => {
+    let rst = 0;
+    item.forEach(el => {
+      name.forEach((nm, i) => {
+        if(nm === el) rst += yearning[i]
+      })
+    })
+    return rst;
+  });
+}
+console.log('75',solution75(["may", "kein", "kain", "radi"], [5, 10, 1, 3], [["may", "kein", "kain", "radi"],["may", "kein", "brin", "deny"], ["kon", "kain", "may", "coni"]]));
+console.log('75',solution75(["kali", "mari", "don"], [11, 1, 55], [["kali", "mari", "don"], ["pony", "tom", "teddy"], ["con", "mona", "don"]]));
+console.log('75',solution75(["may", "kein", "kain", "radi"], [5, 10, 1, 3], [["may"],["kein", "deny", "may"], ["kon", "coni"]]));
+
+/* 76. 달리기 경주 */
+
+const solution76 = (players, callings) =>  {
+  let map1 = new Map();
+  let map2 = new Map();
+  players.forEach((name, index) => {
+    map1.set(name, index);
+    map2.set(index, name)
+  })
+  callings.forEach(name => {
+    let playerScore = map1.get(name);
+    let otherPlayer = map2.get(playerScore - 1);
+
+    map1.set(name, playerScore - 1);
+    map1.set(otherPlayer, playerScore)
+    map2.set(playerScore, otherPlayer);
+    map2.set(playerScore - 1, name);
+  });
+
+  let rst = [];
+  for(let [key, name] of map1.entries()){
+    rst[name] = key;
+  }
+  return rst
+}
+
+console.log('76',solution76(["mumu", "soe", "poe", "kai", "mine"], ["kai", "kai", "mine", "mine"]));
